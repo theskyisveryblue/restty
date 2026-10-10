@@ -56212,11 +56212,22 @@ function normalizeFetchedScript(text) {
 }
 async function fetchScriptText(url) {
   try {
-    const res = await fetch(url, { cache: "no-store" });
+    const bust = `?t=${Date.now()}`;
+    const targetUrl = `${url}${bust}`;
+    const res = await fetch(targetUrl, { cache: "no-store" });
     if (!res.ok)
       return null;
-    return normalizeFetchedScript(await res.text());
-  } catch {
+    const text = await res.text();
+    const normalized = normalizeFetchedScript(text);
+    if (normalized) {
+      console.log(`[seed] successfully fetched ${url}: ${normalized.split(`
+`)[0]}`);
+    } else {
+      console.warn(`[seed] fetch ${url} returned non-script content`);
+    }
+    return normalized;
+  } catch (err) {
+    console.error(`[seed] fetch ${url} failed`, err);
     return null;
   }
 }
@@ -57383,5 +57394,5 @@ var firstPane = manager2.createInitialPane({ focus: true });
 activePaneId = firstPane.id;
 queueResizeAllPanes();
 
-//# debugId=A8D31E18AB1A56BF64756E2164756E21
+//# debugId=318149FCDD64BA5964756E2164756E21
 //# sourceMappingURL=app.js.map
