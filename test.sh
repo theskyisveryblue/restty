@@ -1,15 +1,11 @@
-#!/usr/bin/env bash
-set -euo pipefail
-
-# Basic terminal capability showcase for restty visual checks.
-# Usage: ./test.sh
-
-ESC=$'\x1b'
+#!/bin/sh
+# restty test v2
+ESC=$(printf '\033')
 CSI="${ESC}["
 
 cleanup() {
-  local reset_seq="${CSI}0m${CSI}?25h${CSI}?1000l${CSI}?1002l${CSI}?1003l${CSI}?1006l${CSI}?2004l${CSI}?2027l"
-  printf '%s' "${reset_seq}" >/dev/tty 2>/dev/null || printf '%s' "${reset_seq}"
+  reset_seq="${CSI}0m${CSI}?25h${CSI}?1000l${CSI}?1002l${CSI}?1003l${CSI}?1006l${CSI}?2004l${CSI}?2027l"
+  printf '%s' "${reset_seq}"
 }
 trap cleanup EXIT
 
@@ -28,29 +24,39 @@ printf '%s\n' "${CSI}4:1mUnderline (single)${CSI}0m ${CSI}4:2mUnderline (double)
 
 # Basic colors 16
 printf '\n%s\n' "Base 16 colors:"
-for i in {0..15}; do
+i=0
+while [ "$i" -le 15 ]; do
   printf '%s' "${CSI}48;5;${i}m  ${CSI}0m"
-  if (( (i+1) % 8 == 0 )); then printf '\n'; fi
- done
+  if [ $(( (i+1) % 8 )) -eq 0 ]; then printf '\n'; fi
+  i=$((i + 1))
+done
 
 # 256-color ramp
 printf '\n%s\n' "256-color ramp (6x6x6):"
-for r in {0..5}; do
-  for g in {0..5}; do
-    for b in {0..5}; do
+r=0
+while [ "$r" -le 5 ]; do
+  g=0
+  while [ "$g" -le 5 ]; do
+    b=0
+    while [ "$b" -le 5 ]; do
       idx=$((16 + r*36 + g*6 + b))
       printf '%s' "${CSI}48;5;${idx}m  ${CSI}0m"
+      b=$((b + 1))
     done
     printf ' '
+    g=$((g + 1))
   done
   printf '\n'
- done
+  r=$((r + 1))
+done
 
 # Grayscale ramp
 printf '\n%s\n' "Grayscale ramp:"
-for i in {232..255}; do
+i=232
+while [ "$i" -le 255 ]; do
   printf '%s' "${CSI}48;5;${i}m  ${CSI}0m"
- done
+  i=$((i + 1))
+done
 printf '\n'
 
 # Truecolor
@@ -93,8 +99,8 @@ printf 'bar\n'
 # Mouse mode SGR enable/disable (do not leave enabled before read)
 printf '%s' "${CSI}?1000h${CSI}?1002h${CSI}?1006h${CSI}?1000l${CSI}?1002l${CSI}?1006l"
 
-printf '\n%s\n' "Done. Press any key to restore cursor."
-read -r -n 1 -s
+printf '\n%s\n' "Done. Press enter to restore cursor."
+read -r _
 
 cleanup
 printf '%s\n' "ok"

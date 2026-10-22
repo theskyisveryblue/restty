@@ -1,0 +1,8 @@
+
+ ⛅️ wrangler 4.61.0 (update available 4.63.0)
+─────────────────────────────────────────────
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mThis command cannot be run in a non-interactive context[0m
+
+
+🪵  Logs were written to "/Users/theone/Library/Preferences/.wrangler/logs/wrangler-2026-02-07_22-09-21_274.log"
